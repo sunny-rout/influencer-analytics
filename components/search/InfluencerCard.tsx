@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 
+
 interface Influencer {
   id:                    string;
   username:              string;
@@ -20,12 +21,6 @@ interface Influencer {
 interface Props {
   influencer: Influencer;
 }
-
-const PLATFORM_COLORS: Record<string, string> = {
-  instagram: 'bg-orange-50 text-orange-800 border-orange-200',
-  youtube:   'bg-red-50 text-red-800 border-red-200',
-  tiktok:    'bg-blue-50 text-blue-800 border-blue-200',
-};
 
 function formatNumber(n: number): string {
   if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + 'M';
@@ -77,8 +72,30 @@ export function InfluencerCard({ influencer: inf }: Props) {
             </span>
           </div>
 
-          <span className={`text-xs px-2 py-0.5 rounded-full border font-medium flex-shrink-0 ${PLATFORM_COLORS[inf.platform]}`}>
-            {inf.platform.charAt(0).toUpperCase() + inf.platform.slice(1)}
+          <span style={{
+                fontSize: 11,
+                padding: '2px 8px',
+                borderRadius: 20,
+                fontWeight: 500,
+                border: '1px solid',
+                flexShrink: 0,
+                ...(inf.platform === 'instagram' && {
+                    background: '#FFF0F8',
+                    color: '#C4006A',
+                    borderColor: '#F9B8D8',
+                }),
+                ...(inf.platform === 'youtube' && {
+                    background: '#FFF0F0',
+                    color: '#CC0000',
+                    borderColor: '#FFBDBD',
+                }),
+                ...(inf.platform === 'tiktok' && {
+                    background: '#F0FAFD',
+                    color: '#1A6B85',
+                    borderColor: '#B3E5F2',
+                }),
+                }}>
+                {inf.platform.charAt(0).toUpperCase() + inf.platform.slice(1)}
           </span>
         </div>
 

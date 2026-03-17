@@ -20,11 +20,23 @@ export function SearchBar({ value, onChange, isLoading }: Props) {
         )}
       </div>
       <Input
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder="Search influencers by name or username..."
-        className="pl-10 h-11 text-sm"
-      />
+			value={value}
+			onChange={(e) => onChange(e.target.value)}
+			placeholder="Search influencers by name or username..."
+			className="pl-10 h-11 text-sm"
+			style={{
+				borderColor: 'var(--border)',
+				outline: 'none',
+			}}
+			onFocus={(e) => {
+				e.target.style.borderColor = 'var(--brand-primary)';
+				e.target.style.boxShadow = '0 0 0 3px rgba(94,48,136,0.12)';
+			}}
+			onBlur={(e) => {
+				e.target.style.borderColor = 'var(--border)';
+				e.target.style.boxShadow = 'none';
+			}}
+		/>
     </div>
   );
 }
