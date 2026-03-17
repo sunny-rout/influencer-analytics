@@ -37,53 +37,46 @@ export const influencerRouter = createTRPCRouter({
 // Call this to fetch a user from Instagram API and save to DB
 syncFromInstagram: publicProcedure
   .input(z.object({
-    // The Instagram User ID from your .env
-    // or any business account ID you want to sync
-    userId: z.string().min(1),
+    userId:               z.string().min(1),
+    country:              z.string().length(2).optional(),
+    useBusinessDiscovery: z.boolean().default(false),
   }))
   .mutation(async ({ ctx, input }) => {
     try {
-      // 1. Fetch profile and media in parallel
       const [profile, mediaMetrics] = await Promise.all([
-        fetchInstagramProfile(input.userId),
+        fetchInstagramProfile(input.userId, {
+          useBusinessDiscovery: input.useBusinessDiscovery,
+          country:              input.country,
+        }),
         fetchInstagramMediaMetrics(input.userId),
       ]);
 
-      // 2. Calculate engagement rate
       const engagementRate = calculateEngagementRate(
         mediaMetrics.avgLikes,
         mediaMetrics.avgComments,
         profile.followersCount
       );
 
-      // 3. Upsert influencer into DB
       const influencerId = await upsertInfluencer(
-        ctx.db,
-        profile,
-        'instagram'
+        ctx.db, profile, 'instagram'
       );
 
-      // 4. Insert metrics snapshot
       await insertMetricsSnapshot(
-        ctx.db,
-        influencerId,
-        profile,
-        mediaMetrics,
-        engagementRate
+        ctx.db, influencerId, profile, mediaMetrics, engagementRate
       );
 
-      // 5. Refresh materialized view
       await refreshMetricsView(ctx.db);
-
-      // 6. Invalidate cache so search returns fresh data
       await invalidateCache('search:*');
 
       return {
-        success:        true,
+        success:              true,
         influencerId,
-        username:       profile.username,
-        followersCount: profile.followersCount,
-        engagementRate: (engagementRate * 100).toFixed(2) + '%',
+        username:             profile.username,
+        country:              profile.country,
+        accountType:          profile.accountType,
+        followersCount:       profile.followersCount,
+        engagementRate:       (engagementRate * 100).toFixed(2) + '%',
+        usedBusinessDiscovery: input.useBusinessDiscovery,
       };
 
     } catch (error: any) {
