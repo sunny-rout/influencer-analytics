@@ -3,6 +3,8 @@ import { Providers } from './providers';
 import './globals.css';
 import { Geist } from "next/font/google";
 import Link from 'next/link';
+import { SignOutButton } from '@/components/auth/SignOutButton';
+import { auth } from '@/auth';
 
 const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
@@ -11,16 +13,15 @@ export const metadata: Metadata = {
   description: 'Discover and analyze influencers',
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const session = await auth();
   return (
     <html lang="en">
       <body className="min-h-screen bg-background font-sans antialiased">
-
-        {/* Navbar */}
         <nav style={{ borderBottom: '1px solid var(--border)' }}
           className="px-6 py-0 flex items-center h-14 gap-8 bg-background sticky top-0 z-50">
 
@@ -38,8 +39,7 @@ export default function RootLayout({
               </svg>
             </div>
             <span style={{
-              fontWeight: 700,
-              fontSize: 15,
+              fontWeight: 700, fontSize: 15,
               color: 'var(--brand-primary)',
               letterSpacing: '-0.01em',
             }}>
@@ -47,32 +47,83 @@ export default function RootLayout({
             </span>
           </Link>
 
-          {/* Nav links */}
-          <div className="flex items-center gap-1">
-            <Link href="/search"
-              className="px-3 py-1.5 rounded-md text-sm text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors no-underline">
-              Discover
-            </Link>
-            <Link href="/test-sync"
-              className="px-3 py-1.5 rounded-md text-sm text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors no-underline">
-              Sync
-            </Link>
-          </div>
+          {/* Nav links — only show when logged in */}
+          {session && (
+            <div className="flex items-center gap-1">
+              <Link href="/search"
+                className="px-3 py-1.5 rounded-md text-sm text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors no-underline">
+                Discover
+              </Link>
+            </div>
+          )}
 
           {/* Right side */}
           <div className="ml-auto flex items-center gap-3">
-            <button style={{
-              background: 'var(--brand-primary)',
-              color: '#fff',
-              border: 'none',
-              borderRadius: 8,
-              padding: '6px 14px',
-              fontSize: 13,
-              fontWeight: 500,
-              cursor: 'pointer',
-            }}>
-              Sign in
-            </button>
+            {session ? (
+              <>
+                {/* User avatar */}
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                }}>
+                  {session.user?.image ? (
+                    <img
+                      src={session.user.image}
+                      alt={session.user.name || ''}
+                      style={{
+                        width: 30, height: 30,
+                        borderRadius: '50%',
+                        objectFit: 'cover',
+                      }}
+                    />
+                  ) : (
+                    <div style={{
+                      width: 30, height: 30,
+                      borderRadius: '50%',
+                      background: 'var(--brand-primary)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: 12,
+                      fontWeight: 600,
+                      color: '#fff',
+                    }}>
+                      {session.user?.name?.[0]?.toUpperCase() || 'U'}
+                    </div>
+                  )}
+                  <span style={{
+                    fontSize: 13,
+                    color: 'var(--foreground)',
+                    fontWeight: 500,
+                  }}>
+                    {session.user?.name?.split(' ')[0]}
+                  </span>
+                </div>
+                <SignOutButton />
+              </>
+            ) : (
+              <>
+                <Link href="/login" style={{
+                  fontSize: 13,
+                  color: 'var(--muted-foreground)',
+                  textDecoration: 'none',
+                }}>
+                  Sign in
+                </Link>
+                <Link href="/signup" style={{
+                  background: 'var(--brand-primary)',
+                  color: '#fff',
+                  padding: '6px 14px',
+                  borderRadius: 8,
+                  fontSize: 13,
+                  fontWeight: 500,
+                  textDecoration: 'none',
+                }}>
+                  Get started
+                </Link>
+              </>
+            )}
           </div>
         </nav>
 
