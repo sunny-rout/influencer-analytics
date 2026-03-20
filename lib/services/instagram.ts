@@ -131,7 +131,7 @@ async function fetchBusinessDiscoveryProfile(
   ].join(',');
 
   const url =
-    `${FACEBOOK_API}/${businessAccountId}` +
+    `${INSTAGRAM_API}/${businessAccountId}` +
     `?fields=business_discovery.fields(${fields})` +
     `&access_token=${process.env.INSTAGRAM_ACCESS_TOKEN}`;
 

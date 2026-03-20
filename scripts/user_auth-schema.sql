@@ -44,3 +44,7 @@ CREATE INDEX idx_accounts_user_id   ON accounts(user_id);
 CREATE INDEX idx_sessions_user_id   ON sessions(user_id);
 CREATE INDEX idx_sessions_token     ON sessions(session_token);
 CREATE INDEX idx_users_email        ON users(email);
+
+ALTER TABLE users
+  ADD COLUMN IF NOT EXISTS instagram_access_token TEXT,
+  ADD COLUMN IF NOT EXISTS instagram_user_id      VARCHAR(100);

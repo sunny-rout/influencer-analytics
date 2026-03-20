@@ -54,6 +54,10 @@ export default async function RootLayout({
                 className="px-3 py-1.5 rounded-md text-sm text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors no-underline">
                 Discover
               </Link>
+              <Link href="/admin/sync"
+                className="px-3 py-1.5 rounded-md text-sm text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors no-underline">
+                Sync creators
+              </Link>
             </div>
           )}
 

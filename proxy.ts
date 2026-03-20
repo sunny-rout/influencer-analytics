@@ -6,6 +6,7 @@ const PROTECTED_ROUTES = [
   '/search',
   '/influencer',
   '/campaigns',
+  '/admin',
 ];
 
 export default auth((req) => {
